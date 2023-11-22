@@ -419,23 +419,10 @@ func (m *pocRepo) GetPocByID(ctx context.Context, id int64) (*models.Poc, error)
 }
 
 // Get Poc by id
-func (m *pocRepo) GetTecActivityByID(ctx context.Context, id int64) (*models.TECTimeline, error) {
+func (m *pocRepo) GetTecActivityByID(ctx context.Context, id int64) ([]*models.TECTimeline, error) {
 	query := `Select id, tecid, comments, updatedon FROM tectimeline WHERE tecid=?`
+	return m.fetchTecById(ctx, query, id)
 
-	rows, err := m.fetchTecById(ctx, query, id)
-	if err != nil {
-		logging.Logger.Errorf(err.Error())
-		return nil, err
-	}
-
-	payload := &models.TECTimeline{}
-	if len(rows) > 0 {
-		payload = rows[0]
-	} else {
-		return payload, errors.New("requested tec timeline is not found")
-	}
-
-	return payload, nil
 }
 
 // Create new Poc
