@@ -81,6 +81,32 @@ func (m *pocRepo) fetchTecById(ctx context.Context, query string, args ...interf
 	return payload, nil
 }
 
+func (m *pocRepo) fetchAccById(ctx context.Context, query string, args ...interface{}) ([]*models.AccTimeline, error) {
+	rows, err := m.Conn.QueryContext(ctx, query, args...)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+	payload := make([]*models.AccTimeline, 0)
+	for rows.Next() {
+		data := new(models.AccTimeline)
+
+		err := rows.Scan(
+			&data.ID,
+			&data.AccId,
+			&data.Comments,
+			&data.UpdatedOn,
+		)
+		if err != nil {
+			logging.Logger.Errorf(err.Error())
+			return nil, err
+		}
+		payload = append(payload, data)
+	}
+	return payload, nil
+}
+
 // define fetchFeed method
 func (m *pocRepo) fetchFeed(ctx context.Context, query string, args ...interface{}) ([]*models.Feed, error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -422,7 +448,12 @@ func (m *pocRepo) GetPocByID(ctx context.Context, id int64) (*models.Poc, error)
 func (m *pocRepo) GetTecActivityByID(ctx context.Context, id int64) ([]*models.TECTimeline, error) {
 	query := `Select id, tecid, comments, updatedon FROM tectimeline WHERE tecid=?`
 	return m.fetchTecById(ctx, query, id)
+}
 
+// Get Poc by id
+func (m *pocRepo) GetAccActivityByID(ctx context.Context, id int64) ([]*models.AccTimeline, error) {
+	query := `Select id, accid, comments, updatedon FROM acctimeline WHERE accid=?`
+	return m.fetchAccById(ctx, query, id)
 }
 
 // Create new Poc
@@ -469,6 +500,22 @@ func (m *pocRepo) CreateTecTimeline(ctx context.Context, p *models.TECTimeline) 
 		return -1, err
 	}
 	res, err := stmt.ExecContext(ctx, p.TECId, p.Comments, p.UpdatedOn)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return -1, err
+	}
+
+	return res.RowsAffected()
+}
+
+func (m *pocRepo) CreateAccTimeline(ctx context.Context, p *models.AccTimeline) (int64, error) {
+	query := `INSERT INTO acctimeline (accid, comments, updatedon) VALUES(?, ?, ?)`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return -1, err
+	}
+	res, err := stmt.ExecContext(ctx, p.AccId, p.Comments, p.UpdatedOn)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())
 		return -1, err

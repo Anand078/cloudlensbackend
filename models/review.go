@@ -90,3 +90,10 @@ type TECTimeline struct {
 	Comments  string    `json:"comments,omitempty"`
 	UpdatedOn time.Time `json:"updatedon,omitempty"`
 }
+
+type AccTimeline struct {
+	ID        int64     `json:"id,omitempty"`
+	AccId     int64     `json:"accid,omitempty"`
+	Comments  string    `json:"comments,omitempty"`
+	UpdatedOn time.Time `json:"updatedon,omitempty"`
+}
