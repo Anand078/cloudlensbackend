@@ -45,4 +45,6 @@ type PocRepo interface {
 
 	//Accelerator Snap
 	FetchAccSnap(ctx context.Context) ([]*models.AccSnap, error)
+	CreateAccSnap(ctx context.Context, e *models.AccSnap) (int64, error)
+	UpdateAccSnap(ctx context.Context, e *models.AccSnap) (*models.AccSnap, error)
 }

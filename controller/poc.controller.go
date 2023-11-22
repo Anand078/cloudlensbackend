@@ -197,6 +197,53 @@ func (e *Poc) SaveTecMember(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// SaveAccSnapshot inserts Accelerator rows with negative ID values and updates rows with non-negative ID values.
+func (e *Poc) SaveAccSnapshot(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "Unable to parse form data", http.StatusBadRequest)
+		logging.Logger.Errorf(err.Error())
+		return
+	}
+
+	if r.Body == nil {
+		logging.Logger.Infof("empty body")
+	}
+
+	var accMembers []models.AccSnap
+
+	err = json.NewDecoder(r.Body).Decode(&accMembers)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		logging.Logger.Errorf(err.Error())
+		return
+	}
+	// Iterate over the slice of accMembers
+	for _, accMember := range accMembers {
+		if accMember.ID < 0 {
+			// Insert accMember with negative ID
+			res, err := e.repo.CreateAccSnap(r.Context(), &accMember)
+			if err != nil {
+				respondWithError(w, http.StatusForbidden, "Forbidden")
+				logging.Logger.Errorf(err.Error())
+				return
+			}
+			// On success
+			respondwithJSON(w, 200, res)
+		} else {
+			// Update accMember with non-negative ID
+			res, err := e.repo.UpdateAccSnap(r.Context(), &accMember)
+			if err != nil {
+				respondWithError(w, http.StatusForbidden, err.Error())
+				logging.Logger.Errorf(err.Error())
+				return
+			}
+			// On success
+			respondwithJSON(w, 200, res)
+		}
+	}
+}
+
 // swagger:route POST /feed Feed createFeed
 // Create new feed
 // responses:

@@ -420,6 +420,23 @@ func (m *pocRepo) CreateTecMember(ctx context.Context, p *models.SaveTecMember) 
 	return res.RowsAffected()
 }
 
+// Create new Acc snap
+func (m *pocRepo) CreateAccSnap(ctx context.Context, p *models.AccSnap) (int64, error) {
+	query := `INSERT INTO acceleratorsnap (accname, version, indicativetimeline, resourcerequirement, blocker, comments, updatedon) VALUES(?, ?, ?, ?, ?, ?, ?)`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return -1, err
+	}
+	res, err := stmt.ExecContext(ctx, p.AccName, p.Version, p.IndicativeTimeline, p.ResourceRequirement, p.Blocker, p.Comments, p.UpdatedOn)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return -1, err
+	}
+
+	return res.RowsAffected()
+}
+
 // Update TecMember
 func (m *pocRepo) UpdateTecMember(ctx context.Context, p *models.SaveTecMember) (*models.SaveTecMember, error) {
 	query := "UPDATE tecmember set member=?, project=?, comments=?, isavailable=?, updatedon=? where id=?"
@@ -435,6 +452,35 @@ func (m *pocRepo) UpdateTecMember(ctx context.Context, p *models.SaveTecMember) 
 		p.Project,
 		p.Comments,
 		p.IsAvailable,
+		p.UpdatedOn,
+		p.ID,
+	)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return nil, err
+	}
+	defer stmt.Close()
+
+	return p, nil
+}
+
+// Update Accsnap
+func (m *pocRepo) UpdateAccSnap(ctx context.Context, p *models.AccSnap) (*models.AccSnap, error) {
+	query := "UPDATE acceleratorsnap set accname=?, version=?, indicativetimeline=?, resourcerequirement=?, blocker=?,comments=?, updatedon=? where id=?"
+
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return nil, err
+	}
+	_, err = stmt.ExecContext(
+		ctx,
+		p.AccName,
+		p.Version,
+		p.IndicativeTimeline,
+		p.ResourceRequirement,
+		p.Blocker,
+		p.Comments,
 		p.UpdatedOn,
 		p.ID,
 	)

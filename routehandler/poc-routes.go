@@ -46,5 +46,7 @@ func HandlePocRoutes(r *mux.Router, db *dbconfig.DB) {
 	r.HandleFunc("/tecmember", pocHandler.GetTecMembers).Methods(http.MethodGet)
 	r.HandleFunc("/tecmember", pocHandler.SaveTecMember).Methods(http.MethodPost)
 
+	//Accelerator
 	r.HandleFunc("/accsnap", pocHandler.GetAccSnapshots).Methods(http.MethodGet)
+	r.HandleFunc("/accsnap", pocHandler.SaveAccSnapshot).Methods(http.MethodPost)
 }
