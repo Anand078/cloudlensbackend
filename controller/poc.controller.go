@@ -197,6 +197,39 @@ func (e *Poc) SaveTecMember(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (e *Poc) SaveTecActivity(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "Unable to parse form data", http.StatusBadRequest)
+		logging.Logger.Errorf(err.Error())
+		return
+	}
+
+	if r.Body == nil {
+		logging.Logger.Infof("empty body")
+	}
+
+	var tecTimelines []models.TECTimeline
+
+	err = json.NewDecoder(r.Body).Decode(&tecTimelines)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		logging.Logger.Errorf(err.Error())
+		return
+	}
+	// Iterate over the slice of tecMembers
+	for _, tecTimeline := range tecTimelines {
+		res, err := e.repo.CreateTecTimeline(r.Context(), &tecTimeline)
+		if err != nil {
+			respondWithError(w, http.StatusForbidden, err.Error())
+			logging.Logger.Errorf(err.Error())
+			return
+		}
+		// On success
+		respondwithJSON(w, 200, res)
+	}
+}
+
 // SaveAccSnapshot inserts Accelerator rows with negative ID values and updates rows with non-negative ID values.
 func (e *Poc) SaveAccSnapshot(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
@@ -519,6 +552,25 @@ func (e *Poc) GetTecMembers(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		respondWithError(w, http.StatusNotFound, err.Error())
 		logging.Logger.Errorf(err.Error())
+		return
+	}
+	// On success
+	respondwithJSON(w, 200, res)
+}
+
+// Get tec activity by id
+func (e *Poc) GetTecActivity(w http.ResponseWriter, r *http.Request) {
+	// Covert id from str to int64
+	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		logging.Logger.Errorf(err.Error())
+		return
+	}
+	res, err := e.repo.GetTecActivityByID(r.Context(), id)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		respondWithError(w, http.StatusNotFound, err.Error())
 		return
 	}
 	// On success

@@ -83,3 +83,10 @@ type AccSnap struct {
 	Comments            string    `json:"comments,omitempty"`
 	UpdatedOn           time.Time `json:"updatedon,omitempty"`
 }
+
+type TECTimeline struct {
+	ID        int64     `json:"id,omitempty"`
+	TECId     int64     `json:"tecid,omitempty"`
+	Comments  string    `json:"comments,omitempty"`
+	UpdatedOn time.Time `json:"updatedon,omitempty"`
+}

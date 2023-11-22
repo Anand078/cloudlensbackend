@@ -54,6 +54,33 @@ func (m *pocRepo) fetch(ctx context.Context, query string, args ...interface{}) 
 	return payload, nil
 }
 
+// define fetch method
+func (m *pocRepo) fetchTecById(ctx context.Context, query string, args ...interface{}) ([]*models.TECTimeline, error) {
+	rows, err := m.Conn.QueryContext(ctx, query, args...)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+	payload := make([]*models.TECTimeline, 0)
+	for rows.Next() {
+		data := new(models.TECTimeline)
+
+		err := rows.Scan(
+			&data.ID,
+			&data.TECId,
+			&data.Comments,
+			&data.UpdatedOn,
+		)
+		if err != nil {
+			logging.Logger.Errorf(err.Error())
+			return nil, err
+		}
+		payload = append(payload, data)
+	}
+	return payload, nil
+}
+
 // define fetchFeed method
 func (m *pocRepo) fetchFeed(ctx context.Context, query string, args ...interface{}) ([]*models.Feed, error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -337,6 +364,12 @@ func (m *pocRepo) FetchTecMembers(ctx context.Context) ([]*models.TecMember, err
 	return m.fetchTecMember(ctx, query)
 }
 
+// Get TEC member list
+func (m *pocRepo) FetchTecActivity(ctx context.Context) ([]*models.TecMember, error) {
+	query := `select id, member, IFNULL(project, '') as project, isavailable, IFNULL(comments, '') as comments, updatedon FROM tecmember order by id desc;`
+	return m.fetchTecMember(ctx, query)
+}
+
 // Get Accelerator Snapshot list
 func (m *pocRepo) FetchAccSnap(ctx context.Context) ([]*models.AccSnap, error) {
 	query := `SELECT id, accname, IFNULL(version, '') as version, IFNULL(indicativetimeline, '') as indicativetimeline,
@@ -385,6 +418,26 @@ func (m *pocRepo) GetPocByID(ctx context.Context, id int64) (*models.Poc, error)
 	return payload, nil
 }
 
+// Get Poc by id
+func (m *pocRepo) GetTecActivityByID(ctx context.Context, id int64) (*models.TECTimeline, error) {
+	query := `Select id, tecid, comments, updatedon FROM tectimeline WHERE id=?`
+
+	rows, err := m.fetchTecById(ctx, query, id)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return nil, err
+	}
+
+	payload := &models.TECTimeline{}
+	if len(rows) > 0 {
+		payload = rows[0]
+	} else {
+		return payload, errors.New("requested tec timeline is not found")
+	}
+
+	return payload, nil
+}
+
 // Create new Poc
 func (m *pocRepo) CreatePoc(ctx context.Context, p *models.Poc) (int64, error) {
 	query := `INSERT INTO pocs (account, pocname, technology, objective, owner, teamname, status, remarks,
@@ -412,6 +465,23 @@ func (m *pocRepo) CreateTecMember(ctx context.Context, p *models.SaveTecMember) 
 		return -1, err
 	}
 	res, err := stmt.ExecContext(ctx, p.Member, p.Project, p.Comments, p.IsAvailable, p.UpdatedOn)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return -1, err
+	}
+
+	return res.RowsAffected()
+}
+
+// Create new TecMember
+func (m *pocRepo) CreateTecTimeline(ctx context.Context, p *models.TECTimeline) (int64, error) {
+	query := `INSERT INTO tectimeline (tecid, comments, updatedon) VALUES(?, ?, ?)`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return -1, err
+	}
+	res, err := stmt.ExecContext(ctx, p.TECId, p.Comments, p.UpdatedOn)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())
 		return -1, err
