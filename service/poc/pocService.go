@@ -229,6 +229,7 @@ func (m *pocRepo) fetchTecMember(ctx context.Context, query string, args ...inte
 			&data.ID,
 			&data.Member,
 			&data.Project,
+			&data.CoreSkills,
 			&data.IsAvailable,
 			&data.Comments,
 			&data.UpdatedOn,
@@ -386,7 +387,7 @@ func (m *pocRepo) FetchArbReviews(ctx context.Context) ([]*models.ARBReviews, er
 
 // Get TEC member list
 func (m *pocRepo) FetchTecMembers(ctx context.Context) ([]*models.TecMember, error) {
-	query := `select id, member, IFNULL(project, '') as project, isavailable, IFNULL(comments, '') as comments, updatedon FROM tecmember order by id desc;`
+	query := `select id, member, IFNULL(project, '') as project, IFNULL(coreskills, '') as coreskills, isavailable, IFNULL(comments, '') as comments, updatedon FROM tecmember order by id desc;`
 	return m.fetchTecMember(ctx, query)
 }
 

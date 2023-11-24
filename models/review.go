@@ -59,6 +59,7 @@ type TecMember struct {
 	ID          int64     `json:"id,omitempty"`
 	Member      string    `json:"member,omitempty"`
 	Project     string    `json:"project,omitempty"`
+	CoreSkills  string    `json:"coreskills,omitempty"`
 	IsAvailable bool      `json:"isavailable,omitempty"`
 	Comments    string    `json:"comments,omitempty"`
 	UpdatedOn   time.Time `json:"updatedon,omitempty"`
