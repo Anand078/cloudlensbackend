@@ -212,6 +212,27 @@ func (m *pocRepo) fetchArbReviews(ctx context.Context, query string, args ...int
 	}
 	return payload, nil
 }
+func (m *pocRepo) fetchSkills(ctx context.Context, query string, args ...interface{}) ([]*models.Skills, error) {
+	rows, err := m.Conn.QueryContext(ctx, query, args...)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+	payload := make([]*models.Skills, 0)
+	for rows.Next() {
+		data := new(models.Skills)
+
+		err := rows.Scan(
+			&data.Skills,
+		)
+		if err != nil {
+			return nil, err
+		}
+		payload = append(payload, data)
+	}
+	return payload, nil
+}
 
 // define fetchTecMember method
 func (m *pocRepo) fetchTecMember(ctx context.Context, query string, args ...interface{}) ([]*models.TecMember, error) {
@@ -389,6 +410,12 @@ func (m *pocRepo) FetchArbReviews(ctx context.Context) ([]*models.ARBReviews, er
 func (m *pocRepo) FetchTecMembers(ctx context.Context) ([]*models.TecMember, error) {
 	query := `select id, member, IFNULL(project, '') as project, IFNULL(coreskills, '') as coreskills, isavailable, IFNULL(comments, '') as comments, updatedon FROM tecmember order by id desc;`
 	return m.fetchTecMember(ctx, query)
+}
+
+// Get TEC member list
+func (m *pocRepo) FetchSkills(ctx context.Context) ([]*models.Skills, error) {
+	query := `select skill from skillmaster where isactive=1;`
+	return m.fetchSkills(ctx, query)
 }
 
 // Get TEC member list

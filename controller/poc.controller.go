@@ -591,6 +591,16 @@ func (e *Poc) GetTecMembers(w http.ResponseWriter, r *http.Request) {
 	respondwithJSON(w, 200, res)
 }
 
+func (e *Poc) GetSkills(w http.ResponseWriter, r *http.Request) {
+	res, err := e.repo.FetchSkills(r.Context())
+	if err != nil {
+		respondWithError(w, http.StatusNotFound, err.Error())
+		logging.Logger.Errorf(err.Error())
+		return
+	}
+	respondwithJSON(w, 200, res)
+}
+
 // Get tec activity by id
 func (e *Poc) GetTecActivity(w http.ResponseWriter, r *http.Request) {
 	// Covert id from str to int64

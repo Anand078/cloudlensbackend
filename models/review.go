@@ -98,3 +98,7 @@ type AccTimeline struct {
 	Comments  string    `json:"comments,omitempty"`
 	UpdatedOn time.Time `json:"updatedon,omitempty"`
 }
+
+type Skills struct {
+	Skills string `json:"skill,omitempty"`
+}
