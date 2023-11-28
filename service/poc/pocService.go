@@ -836,6 +836,22 @@ func (m *pocRepo) UpdateArbStatus(ctx context.Context, statusid uint, id int64) 
 	return res.RowsAffected()
 }
 
+// Update Feed
+func (m *pocRepo) UpdateDescription(ctx context.Context, description string, id int64) (int64, error) {
+	query := "UPDATE bestpracticemaster SET description=? WHERE id=?"
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return 0, err
+	}
+	res, err := stmt.ExecContext(ctx, description, id)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return 0, err
+	}
+	return res.RowsAffected()
+}
+
 // Create new Poc
 func (m *pocRepo) CreateArb(ctx context.Context, p *models.Reviews) (int64, error) {
 	query := `INSERT INTO reviewboard (projectname, projectowner, reviewer, auditor, projectscore, startdate, enddate)

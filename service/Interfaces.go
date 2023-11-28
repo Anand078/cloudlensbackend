@@ -45,7 +45,7 @@ type PocRepo interface {
 	CreateTecTimeline(ctx context.Context, e *models.TECTimeline) (int64, error)
 	GetTecActivityByID(ctx context.Context, id int64) ([]*models.TECTimeline, error)
 	FetchSkills(ctx context.Context) ([]*models.Skills, error)
-
+	UpdateDescription(ctx context.Context, description string, id int64) (int64, error)
 	//Accelerator Snap
 	FetchAccSnap(ctx context.Context) ([]*models.AccSnap, error)
 	CreateAccSnap(ctx context.Context, e *models.AccSnap) (int64, error)

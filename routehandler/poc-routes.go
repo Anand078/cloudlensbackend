@@ -48,10 +48,12 @@ func HandlePocRoutes(r *mux.Router, db *dbconfig.DB) {
 	r.HandleFunc("/tectimeline/{id}", pocHandler.GetTecActivity).Methods(http.MethodGet)
 	r.HandleFunc("/tectimeline", pocHandler.SaveTecActivity).Methods(http.MethodPost)
 	r.HandleFunc("/skills", pocHandler.GetSkills).Methods(http.MethodGet)
+	r.HandleFunc("/tecmember/{id}", pocHandler.UpdateDescription).Methods(http.MethodPut)
 
 	//Accelerator
 	r.HandleFunc("/accsnap", pocHandler.GetAccSnapshots).Methods(http.MethodGet)
 	r.HandleFunc("/accsnap", pocHandler.SaveAccSnapshot).Methods(http.MethodPost)
 	r.HandleFunc("/acctimeline/{id}", pocHandler.GetAccActivity).Methods(http.MethodGet)
 	r.HandleFunc("/acctimeline", pocHandler.SaveAccActivity).Methods(http.MethodPost)
+
 }

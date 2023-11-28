@@ -30,6 +30,10 @@ type ArbStatusId struct {
 	StatusId int32 `json:"statusid,omitempty"`
 }
 
+type BestPractice struct {
+	Id          int32  `json:"id,omitempty"`
+	Description string `json:"description,omitempty"`
+}
 type Pillars struct {
 	ID         int64  `json:"id,omitempty"`
 	PillarName string `json:"pillarname,omitempty"`
