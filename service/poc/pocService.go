@@ -504,13 +504,13 @@ func (m *pocRepo) CreatePoc(ctx context.Context, p *models.Poc) (int64, error) {
 
 // Create new TecMember
 func (m *pocRepo) CreateTecMember(ctx context.Context, p *models.SaveTecMember) (int64, error) {
-	query := `INSERT INTO tecmember (member, project, comments, isavailable, updatedon) VALUES(?, ?, ?, ?, ?)`
+	query := `INSERT INTO tecmember (member, project, coreskills, comments, isavailable, updatedon) VALUES(?, ?, ?, ?, ?, ?)`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())
 		return -1, err
 	}
-	res, err := stmt.ExecContext(ctx, p.Member, p.Project, p.Comments, p.IsAvailable, p.UpdatedOn)
+	res, err := stmt.ExecContext(ctx, p.Member, p.Project, p.CoreSkills, p.Comments, p.IsAvailable, p.UpdatedOn)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())
 		return -1, err
@@ -571,7 +571,7 @@ func (m *pocRepo) CreateAccSnap(ctx context.Context, p *models.AccSnap) (int64, 
 
 // Update TecMember
 func (m *pocRepo) UpdateTecMember(ctx context.Context, p *models.SaveTecMember) (*models.SaveTecMember, error) {
-	query := "UPDATE tecmember set member=?, project=?, comments=?, isavailable=?, updatedon=? where id=?"
+	query := "UPDATE tecmember set member=?, project=?, coreskills=?, comments=?, isavailable=?, updatedon=? where id=?"
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
@@ -582,6 +582,7 @@ func (m *pocRepo) UpdateTecMember(ctx context.Context, p *models.SaveTecMember) 
 		ctx,
 		p.Member,
 		p.Project,
+		p.CoreSkills,
 		p.Comments,
 		p.IsAvailable,
 		p.UpdatedOn,

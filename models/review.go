@@ -73,6 +73,7 @@ type SaveTecMember struct {
 	ID          int64     `json:"id,omitempty"`
 	Member      string    `json:"member,omitempty"`
 	Project     string    `json:"project,omitempty"`
+	CoreSkills  string    `json:"coreskills,omitempty"`
 	Comments    string    `json:"comments,omitempty"`
 	IsAvailable uint8     `json:"isavailable,omitempty"`
 	UpdatedOn   time.Time `json:"updatedon,omitempty"`
