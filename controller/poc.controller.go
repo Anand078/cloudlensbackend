@@ -162,7 +162,7 @@ func (e *Poc) SaveTecMember(w http.ResponseWriter, r *http.Request) {
 	if r.Body == nil {
 		logging.Logger.Infof("empty body")
 	}
-
+	var responses []interface{}
 	var tecMembers []models.SaveTecMember
 
 	err = json.NewDecoder(r.Body).Decode(&tecMembers)
@@ -173,28 +173,26 @@ func (e *Poc) SaveTecMember(w http.ResponseWriter, r *http.Request) {
 	}
 	// Iterate over the slice of tecMembers
 	for _, tecMember := range tecMembers {
+		var res interface{}
+		var err error
+
 		if tecMember.ID < 0 {
 			// Insert TecMember with negative ID
-			res, err := e.repo.CreateTecMember(r.Context(), &tecMember)
-			if err != nil {
-				respondWithError(w, http.StatusForbidden, "Forbidden")
-				logging.Logger.Errorf(err.Error())
-				return
-			}
-			// On success
-			respondwithJSON(w, 200, res)
+			res, err = e.repo.CreateTecMember(r.Context(), &tecMember)
 		} else {
 			// Update TecMember with non-negative ID
-			res, err := e.repo.UpdateTecMember(r.Context(), &tecMember)
-			if err != nil {
-				respondWithError(w, http.StatusForbidden, err.Error())
-				logging.Logger.Errorf(err.Error())
-				return
-			}
-			// On success
-			respondwithJSON(w, 200, res)
+			res, err = e.repo.UpdateTecMember(r.Context(), &tecMember)
 		}
+
+		if err != nil {
+			respondWithError(w, http.StatusForbidden, err.Error())
+			logging.Logger.Errorf(err.Error())
+			return
+		}
+
+		responses = append(responses, res)
 	}
+	respondwithJSON(w, http.StatusOK, responses)
 }
 
 func (e *Poc) SaveTecActivity(w http.ResponseWriter, r *http.Request) {
