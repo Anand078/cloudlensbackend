@@ -480,7 +480,7 @@ func (m *pocRepo) GetTecActivityByID(ctx context.Context, id int64) ([]*models.T
 
 // Get Poc by id
 func (m *pocRepo) GetAccActivityByID(ctx context.Context, id int64) ([]*models.AccTimeline, error) {
-	query := `Select id, accid, comments, updatedon FROM acctimeline WHERE accid=?`
+	query := `Select id, accid, comments, updatedon FROM acctimeline WHERE accid=? order by id desc;`
 	return m.fetchAccById(ctx, query, id)
 }
 
