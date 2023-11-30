@@ -474,7 +474,7 @@ func (m *pocRepo) GetPocByID(ctx context.Context, id int64) (*models.Poc, error)
 
 // Get Poc by id
 func (m *pocRepo) GetTecActivityByID(ctx context.Context, id int64) ([]*models.TECTimeline, error) {
-	query := `Select id, tecid, comments, updatedon FROM tectimeline WHERE tecid=?`
+	query := `Select id, tecid, comments, updatedon FROM tectimeline WHERE tecid=? order by id desc;`
 	return m.fetchTecById(ctx, query, id)
 }
 
