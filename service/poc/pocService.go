@@ -549,7 +549,6 @@ func (m *pocRepo) UpdateCoreSkill(ctx context.Context, p *models.Skills) (*model
 	_, err = stmt.ExecContext(
 		ctx,
 		p.Skill,
-		p.UpdatedOn,
 		p.ID,
 	)
 	if err != nil {
