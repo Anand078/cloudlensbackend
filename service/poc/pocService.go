@@ -224,7 +224,8 @@ func (m *pocRepo) fetchSkills(ctx context.Context, query string, args ...interfa
 		data := new(models.Skills)
 
 		err := rows.Scan(
-			&data.Skills,
+			&data.ID,
+			&data.Skill,
 			&data.UpdatedOn,
 		)
 		if err != nil {
@@ -415,7 +416,7 @@ func (m *pocRepo) FetchTecMembers(ctx context.Context) ([]*models.TecMember, err
 
 // Get TEC member list
 func (m *pocRepo) FetchSkills(ctx context.Context) ([]*models.Skills, error) {
-	query := `select skill, updatedon from skillmaster where isactive=1 ORDER by ID desc;`
+	query := `select id, skill, updatedon from skillmaster where isactive=1 ORDER by ID desc;`
 	return m.fetchSkills(ctx, query)
 }
 
