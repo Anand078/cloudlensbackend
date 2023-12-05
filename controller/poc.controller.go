@@ -195,6 +195,50 @@ func (e *Poc) SaveTecMember(w http.ResponseWriter, r *http.Request) {
 	respondwithJSON(w, http.StatusOK, responses)
 }
 
+// SaveTecMember inserts TecMember rows with negative ID values and updates rows with non-negative ID values.
+func (e *Poc) SaveCoreSkills(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "Unable to parse form data", http.StatusBadRequest)
+		logging.Logger.Errorf(err.Error())
+		return
+	}
+
+	if r.Body == nil {
+		logging.Logger.Infof("empty body")
+	}
+	var responses []interface{}
+	var coreSkills []models.Skills
+
+	err = json.NewDecoder(r.Body).Decode(&coreSkills)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		logging.Logger.Errorf(err.Error())
+		return
+	}
+	// Iterate over the slice of tecMembers
+	for _, coreSkill := range coreSkills {
+		var res interface{}
+		var err error
+
+		if coreSkill.ID < 0 {
+			// Insert Coreskill with negative ID
+			res, err = e.repo.CreateCoreSkill(r.Context(), &coreSkill)
+		} else {
+			// Update TecMember with non-negative ID
+			res, err = e.repo.UpdateCoreSkill(r.Context(), &coreSkill)
+		}
+
+		if err != nil {
+			respondWithError(w, http.StatusForbidden, err.Error())
+			logging.Logger.Errorf(err.Error())
+			return
+		}
+		responses = append(responses, res)
+	}
+	respondwithJSON(w, http.StatusOK, responses)
+}
+
 func (e *Poc) SaveTecActivity(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {

@@ -44,7 +44,6 @@ type PocRepo interface {
 	UpdateTecMember(ctx context.Context, e *models.SaveTecMember) (*models.SaveTecMember, error)
 	CreateTecTimeline(ctx context.Context, e *models.TECTimeline) (int64, error)
 	GetTecActivityByID(ctx context.Context, id int64) ([]*models.TECTimeline, error)
-	FetchSkills(ctx context.Context) ([]*models.Skills, error)
 	UpdateDescription(ctx context.Context, description string, id int64) (int64, error)
 	//Accelerator Snap
 	FetchAccSnap(ctx context.Context) ([]*models.AccSnap, error)
@@ -52,4 +51,9 @@ type PocRepo interface {
 	UpdateAccSnap(ctx context.Context, e *models.AccSnap) (*models.AccSnap, error)
 	CreateAccTimeline(ctx context.Context, e *models.AccTimeline) (int64, error)
 	GetAccActivityByID(ctx context.Context, id int64) ([]*models.AccTimeline, error)
+
+	//Skills
+	FetchSkills(ctx context.Context) ([]*models.Skills, error)
+	CreateCoreSkill(ctx context.Context, e *models.Skills) (int64, error)
+	UpdateCoreSkill(ctx context.Context, e *models.Skills) (*models.Skills, error)
 }

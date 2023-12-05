@@ -56,4 +56,6 @@ func HandlePocRoutes(r *mux.Router, db *dbconfig.DB) {
 	r.HandleFunc("/acctimeline/{id}", pocHandler.GetAccActivity).Methods(http.MethodGet)
 	r.HandleFunc("/acctimeline", pocHandler.SaveAccActivity).Methods(http.MethodPost)
 
+	//Core skills
+	r.HandleFunc("/skills", pocHandler.SaveCoreSkills).Methods(http.MethodPost)
 }

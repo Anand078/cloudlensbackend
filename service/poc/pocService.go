@@ -521,6 +521,46 @@ func (m *pocRepo) CreateTecMember(ctx context.Context, p *models.SaveTecMember) 
 	return res.RowsAffected()
 }
 
+// Create new Core skill
+func (m *pocRepo) CreateCoreSkill(ctx context.Context, p *models.Skills) (int64, error) {
+	query := `INSERT INTO skillmaster (skill, updatedon) VALUES(?, now())`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return -1, err
+	}
+	res, err := stmt.ExecContext(ctx, p.Skill)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return -1, err
+	}
+	return res.RowsAffected()
+}
+
+// Update core skill
+func (m *pocRepo) UpdateCoreSkill(ctx context.Context, p *models.Skills) (*models.Skills, error) {
+	query := "UPDATE skillmaster set skill=?, updatedon=now() where id=?"
+
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return nil, err
+	}
+	_, err = stmt.ExecContext(
+		ctx,
+		p.Skill,
+		p.UpdatedOn,
+		p.ID,
+	)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return nil, err
+	}
+	defer stmt.Close()
+
+	return p, nil
+}
+
 // Create new TecMember
 func (m *pocRepo) CreateTecTimeline(ctx context.Context, p *models.TECTimeline) (int64, error) {
 	query := `INSERT INTO tectimeline (tecid, comments, updatedon) VALUES(?, ?, ?)`
