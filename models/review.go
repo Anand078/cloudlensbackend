@@ -105,5 +105,6 @@ type AccTimeline struct {
 }
 
 type Skills struct {
-	Skills string `json:"skill,omitempty"`
+	Skills    string    `json:"skill,omitempty"`
+	UpdatedOn time.Time `json:"updatedon,omitempty"`
 }
