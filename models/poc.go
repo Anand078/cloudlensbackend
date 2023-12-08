@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 // Poc details
 type Poc struct {
 	ID         int64  `json:"id,omitempty"`
@@ -16,9 +18,10 @@ type Poc struct {
 }
 
 // Feed details
-type Feed struct {
-	ID   int64  `json:"id,omitempty"`
-	Feed string `json:"feed,omitempty"`
+type Blog struct {
+	ID        int64     `json:"id,omitempty"`
+	Subject   string    `json:"subject,omitempty"`
+	UpdatedOn time.Time `json:"updatedon,omitempty"`
 }
 
 // Poc tech count detail

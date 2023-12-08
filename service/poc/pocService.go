@@ -7,6 +7,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"time"
 )
 
 type pocRepo struct {
@@ -107,21 +108,22 @@ func (m *pocRepo) fetchAccById(ctx context.Context, query string, args ...interf
 	return payload, nil
 }
 
-// define fetchFeed method
-func (m *pocRepo) fetchFeed(ctx context.Context, query string, args ...interface{}) ([]*models.Feed, error) {
+// define fetchBlogs method
+func (m *pocRepo) fetchBlogs(ctx context.Context, query string, args ...interface{}) ([]*models.Blog, error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())
 		return nil, err
 	}
 	defer rows.Close()
-	payload := make([]*models.Feed, 0)
+	payload := make([]*models.Blog, 0)
 	for rows.Next() {
-		data := new(models.Feed)
+		data := new(models.Blog)
 
 		err := rows.Scan(
 			&data.ID,
-			&data.Feed,
+			&data.Subject,
+			&data.UpdatedOn,
 		)
 		if err != nil {
 			return nil, err
@@ -131,7 +133,7 @@ func (m *pocRepo) fetchFeed(ctx context.Context, query string, args ...interface
 	return payload, nil
 }
 
-// define fetchFeed method
+// define fetchPillar method
 func (m *pocRepo) fetchPillar(ctx context.Context, query string, args ...interface{}) ([]*models.Pillars, error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -383,9 +385,9 @@ func (m *pocRepo) FetchPocs(ctx context.Context) ([]*models.Poc, error) {
 }
 
 // Get feed list
-func (m *pocRepo) FetchFeeds(ctx context.Context) ([]*models.Feed, error) {
-	query := `Select id, feed From feed WHERE isactive=true ORDER BY id desc;`
-	return m.fetchFeed(ctx, query)
+func (m *pocRepo) FetchBlogs(ctx context.Context) ([]*models.Blog, error) {
+	query := `Select id, subject, updatedon From blog ORDER BY id desc;`
+	return m.fetchBlogs(ctx, query)
 }
 
 // Get pillar list
@@ -668,14 +670,14 @@ func (m *pocRepo) UpdateAccSnap(ctx context.Context, p *models.AccSnap) (*models
 }
 
 // Create new Poc
-func (m *pocRepo) CreateFeed(ctx context.Context, p *models.Feed) (int64, error) {
-	query := `INSERT INTO feed (feed) VALUES(?)`
+func (m *pocRepo) CreateBlog(ctx context.Context, p *models.Blog) (int64, error) {
+	query := `INSERT INTO blog (subject, updatedon) VALUES(?, ?)`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())
 		return -1, err
 	}
-	res, err := stmt.ExecContext(ctx, p.Feed)
+	res, err := stmt.ExecContext(ctx, p.Subject, time.Now())
 	if err != nil {
 		logging.Logger.Errorf(err.Error())
 		return -1, err
@@ -746,8 +748,8 @@ func (m *pocRepo) UpdateArb(ctx context.Context, p *models.Reviews, id int64) (*
 }
 
 // Update Feed
-func (m *pocRepo) UpdateFeed(ctx context.Context, p *models.Feed, id int64) (*models.Feed, error) {
-	query := "UPDATE feed set feed=? where id=?"
+func (m *pocRepo) UpdateBlog(ctx context.Context, p *models.Blog, id int64) (*models.Blog, error) {
+	query := "UPDATE blog set subject=?, updatedon=? where id=?"
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
@@ -756,7 +758,8 @@ func (m *pocRepo) UpdateFeed(ctx context.Context, p *models.Feed, id int64) (*mo
 	}
 	_, err = stmt.ExecContext(
 		ctx,
-		p.Feed,
+		p.Subject,
+		p.UpdatedOn,
 		id,
 	)
 	if err != nil {

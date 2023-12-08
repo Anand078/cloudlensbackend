@@ -352,15 +352,15 @@ func (e *Poc) SaveAccSnapshot(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// swagger:route POST /feed Feed createFeed
-// Create new feed
+// swagger:route POST /feed Feed createBlog
+// Create new blog
 // responses:
 //   200: jsonResponse
 //
 // swagger:response jsonResponse
 
 // Create Feed
-func (e *Poc) CreateFeed(w http.ResponseWriter, r *http.Request) {
+func (e *Poc) CreateBlog(w http.ResponseWriter, r *http.Request) {
 	// Parse the form data
 	err := r.ParseForm()
 	if err != nil {
@@ -373,7 +373,7 @@ func (e *Poc) CreateFeed(w http.ResponseWriter, r *http.Request) {
 		logging.Logger.Infof("empty body")
 	}
 	// Create a variable to hold the JSON data
-	req := models.Feed{}
+	req := models.Blog{}
 
 	// Decode the JSON data from the request body
 	err = json.NewDecoder(r.Body).Decode(&req)
@@ -383,7 +383,7 @@ func (e *Poc) CreateFeed(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := e.repo.CreateFeed(r.Context(), &req)
+	res, err := e.repo.CreateBlog(r.Context(), &req)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())
 		respondWithError(w, http.StatusForbidden, "Forbidden")
@@ -427,9 +427,9 @@ func (e *Poc) UpdatePoc(w http.ResponseWriter, r *http.Request) {
 	respondwithJSON(w, 200, res)
 }
 
-// Update feed
-func (e *Poc) UpdateFeed(w http.ResponseWriter, r *http.Request) {
-	req := models.Feed{}
+// Update blog
+func (e *Poc) UpdateBlog(w http.ResponseWriter, r *http.Request) {
+	req := models.Blog{}
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())
@@ -443,7 +443,7 @@ func (e *Poc) UpdateFeed(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := e.repo.UpdateFeed(r.Context(), &req, id)
+	res, err := e.repo.UpdateBlog(r.Context(), &req, id)
 
 	if err != nil {
 		respondWithError(w, http.StatusForbidden, "Forbidden")
@@ -488,25 +488,25 @@ func (e *Poc) DeletePoc(w http.ResponseWriter, r *http.Request) {
 //
 // swagger:response jsonResponse
 
-// Delete Feed
-func (e *Poc) DeleteFeed(w http.ResponseWriter, r *http.Request) {
-	// Covert id from str to int64
-	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
-	if err != nil {
-		logging.Logger.Errorf(err.Error())
-		respondWithError(w, http.StatusBadRequest, "Bad request")
-		return
-	}
+// // Delete Feed
+// func (e *Poc) DeleteFeed(w http.ResponseWriter, r *http.Request) {
+// 	// Covert id from str to int64
+// 	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
+// 	if err != nil {
+// 		logging.Logger.Errorf(err.Error())
+// 		respondWithError(w, http.StatusBadRequest, "Bad request")
+// 		return
+// 	}
 
-	res, err := e.repo.DeleteFeed(r.Context(), id)
-	if err != nil {
-		logging.Logger.Errorf(err.Error())
-		respondWithError(w, http.StatusForbidden, "Forbidden")
-		return
-	}
-	// On success
-	respondwithJSON(w, http.StatusOK, res)
-}
+// 	res, err := e.repo.DeleteFeed(r.Context(), id)
+// 	if err != nil {
+// 		logging.Logger.Errorf(err.Error())
+// 		respondWithError(w, http.StatusForbidden, "Forbidden")
+// 		return
+// 	}
+// 	// On success
+// 	respondwithJSON(w, http.StatusOK, res)
+// }
 
 // Delete Feed
 func (e *Poc) DeleteArb(w http.ResponseWriter, r *http.Request) {
@@ -574,8 +574,8 @@ func (e *Poc) GetPieChart(w http.ResponseWriter, r *http.Request) {
 // swagger:response jsonResponse
 
 // Get Feed list
-func (e *Poc) GetFeed(w http.ResponseWriter, r *http.Request) {
-	res, err := e.repo.FetchFeeds(r.Context())
+func (e *Poc) GetBlogs(w http.ResponseWriter, r *http.Request) {
+	res, err := e.repo.FetchBlogs(r.Context())
 	if err != nil {
 		respondWithError(w, http.StatusNotFound, err.Error())
 		logging.Logger.Errorf(err.Error())
