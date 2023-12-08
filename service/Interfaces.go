@@ -23,6 +23,9 @@ type PocRepo interface {
 	UpdateBlog(ctx context.Context, e *models.Blog) (*models.Blog, error)
 	FetchBlogs(ctx context.Context) ([]*models.Blog, error)
 
+	//Tech sessions
+	FetchTechSessions(ctx context.Context) ([]*models.TechSession, error)
+
 	//Architecture Review Board
 	CreateArb(ctx context.Context, e *models.Reviews) (int64, error)
 	UpdateArb(ctx context.Context, e *models.Reviews, id int64) (*models.Reviews, error)

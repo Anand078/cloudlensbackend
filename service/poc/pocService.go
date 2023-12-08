@@ -132,6 +132,32 @@ func (m *pocRepo) fetchBlogs(ctx context.Context, query string, args ...interfac
 	return payload, nil
 }
 
+// define fetchBlogs method
+func (m *pocRepo) fetchTechSessions(ctx context.Context, query string, args ...interface{}) ([]*models.TechSession, error) {
+	rows, err := m.Conn.QueryContext(ctx, query, args...)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+	payload := make([]*models.TechSession, 0)
+	for rows.Next() {
+		data := new(models.TechSession)
+
+		err := rows.Scan(
+			&data.ID,
+			&data.Topic,
+			&data.Link,
+			&data.UpdatedOn,
+		)
+		if err != nil {
+			return nil, err
+		}
+		payload = append(payload, data)
+	}
+	return payload, nil
+}
+
 // define fetchPillar method
 func (m *pocRepo) fetchPillar(ctx context.Context, query string, args ...interface{}) ([]*models.Pillars, error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -387,6 +413,12 @@ func (m *pocRepo) FetchPocs(ctx context.Context) ([]*models.Poc, error) {
 func (m *pocRepo) FetchBlogs(ctx context.Context) ([]*models.Blog, error) {
 	query := `Select id, subject, updatedon From blog ORDER BY id desc;`
 	return m.fetchBlogs(ctx, query)
+}
+
+// Get tech sessions
+func (m *pocRepo) FetchTechSessions(ctx context.Context) ([]*models.TechSession, error) {
+	query := `Select id, topic, link, updatedon From techsession ORDER BY id desc;`
+	return m.fetchTechSessions(ctx, query)
 }
 
 // Get pillar list

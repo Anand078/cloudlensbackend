@@ -591,9 +591,21 @@ func (e *Poc) GetPieChart(w http.ResponseWriter, r *http.Request) {
 //
 // swagger:response jsonResponse
 
-// Get Feed list
+// Get Blogs
 func (e *Poc) GetBlogs(w http.ResponseWriter, r *http.Request) {
 	res, err := e.repo.FetchBlogs(r.Context())
+	if err != nil {
+		respondWithError(w, http.StatusNotFound, err.Error())
+		logging.Logger.Errorf(err.Error())
+		return
+	}
+	// On success
+	respondwithJSON(w, 200, res)
+}
+
+// Get Blogs
+func (e *Poc) GetTechSessions(w http.ResponseWriter, r *http.Request) {
+	res, err := e.repo.FetchTechSessions(r.Context())
 	if err != nil {
 		respondWithError(w, http.StatusNotFound, err.Error())
 		logging.Logger.Errorf(err.Error())

@@ -24,6 +24,14 @@ type Blog struct {
 	UpdatedOn time.Time `json:"updatedon,omitempty"`
 }
 
+// TechSession
+type TechSession struct {
+	ID        int64     `json:"id,omitempty"`
+	Topic     string    `json:"subject,omitempty"`
+	Link      string    `json:"link,omitempty"`
+	UpdatedOn time.Time `json:"updatedon,omitempty"`
+}
+
 // Poc tech count detail
 type TechCount struct {
 	Technology string `json:"technology"`
