@@ -17,7 +17,7 @@ type Poc struct {
 	AssignedTo string `json:"assignedto,omitempty"`
 }
 
-// Feed details
+// Blog
 type Blog struct {
 	ID        int64     `json:"id,omitempty"`
 	Subject   string    `json:"subject,omitempty"`
