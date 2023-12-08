@@ -22,7 +22,7 @@ func HandlePocRoutes(r *mux.Router, db *dbconfig.DB) {
 	r.HandleFunc("/piechartcount", pocHandler.GetPieChart).Methods(http.MethodGet)
 
 	//feed APIs
-	r.HandleFunc("/feed", pocHandler.GetBlogs).Methods(http.MethodGet)
+	r.HandleFunc("/blog", pocHandler.GetBlogs).Methods(http.MethodGet)
 	r.HandleFunc("/blog", pocHandler.CreateBlog).Methods(http.MethodPost)
 	r.HandleFunc("/blog/{id}", pocHandler.UpdateBlog).Methods(http.MethodPut)
 	// r.HandleFunc("/blog/{id}", pocHandler.DeleteFeed).Methods(http.MethodDelete)
