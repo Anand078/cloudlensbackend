@@ -24,8 +24,7 @@ func HandlePocRoutes(r *mux.Router, db *dbconfig.DB) {
 	//feed APIs
 	r.HandleFunc("/blog", pocHandler.GetBlogs).Methods(http.MethodGet)
 	r.HandleFunc("/blog", pocHandler.CreateBlog).Methods(http.MethodPost)
-	r.HandleFunc("/blog/{id}", pocHandler.UpdateBlog).Methods(http.MethodPut)
-	// r.HandleFunc("/blog/{id}", pocHandler.DeleteFeed).Methods(http.MethodDelete)
+	r.HandleFunc("/blog", pocHandler.SaveBlogs).Methods(http.MethodPost)
 
 	//Architecture Review APIs
 	r.HandleFunc("/arb", pocHandler.GetArb).Methods(http.MethodGet)

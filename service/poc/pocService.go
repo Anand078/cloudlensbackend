@@ -748,7 +748,7 @@ func (m *pocRepo) UpdateArb(ctx context.Context, p *models.Reviews, id int64) (*
 }
 
 // Update Feed
-func (m *pocRepo) UpdateBlog(ctx context.Context, p *models.Blog, id int64) (*models.Blog, error) {
+func (m *pocRepo) UpdateBlog(ctx context.Context, p *models.Blog) (*models.Blog, error) {
 	query := "UPDATE blog set subject=?, updatedon=? where id=?"
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
@@ -760,7 +760,7 @@ func (m *pocRepo) UpdateBlog(ctx context.Context, p *models.Blog, id int64) (*mo
 		ctx,
 		p.Subject,
 		p.UpdatedOn,
-		id,
+		p.ID,
 	)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())

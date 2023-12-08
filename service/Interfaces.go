@@ -18,11 +18,10 @@ type PocRepo interface {
 	FetchTechCount(ctx context.Context) ([]*models.TechCount, error)
 	FetchPieChartCount(ctx context.Context) ([]*models.PieChartCount, error)
 
-	//TEC Live Feeds (not using right now)
+	//Blogs
 	CreateBlog(ctx context.Context, e *models.Blog) (int64, error)
-	UpdateBlog(ctx context.Context, e *models.Blog, id int64) (*models.Blog, error)
+	UpdateBlog(ctx context.Context, e *models.Blog) (*models.Blog, error)
 	FetchBlogs(ctx context.Context) ([]*models.Blog, error)
-	// DeleteFeed(ctx context.Context, id int64) (int64, error)
 
 	//Architecture Review Board
 	CreateArb(ctx context.Context, e *models.Reviews) (int64, error)
