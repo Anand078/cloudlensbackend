@@ -7,7 +7,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 )
 
 type pocRepo struct {
@@ -523,6 +522,23 @@ func (m *pocRepo) CreateTecMember(ctx context.Context, p *models.SaveTecMember) 
 	return res.RowsAffected()
 }
 
+// Create new TecMember
+func (m *pocRepo) CreateBlog(ctx context.Context, p *models.Blog) (int64, error) {
+	query := `INSERT INTO blog (subject, updatedon) VALUES(?, ?)`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return -1, err
+	}
+	res, err := stmt.ExecContext(ctx, p.Subject, p.UpdatedOn)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return -1, err
+	}
+
+	return res.RowsAffected()
+}
+
 // Create new Core skill
 func (m *pocRepo) CreateCoreSkill(ctx context.Context, p *models.Skills) (int64, error) {
 	query := `INSERT INTO skillmaster (skill, updatedon) VALUES(?, now())`
@@ -613,6 +629,30 @@ func (m *pocRepo) CreateAccSnap(ctx context.Context, p *models.AccSnap) (int64, 
 }
 
 // Update TecMember
+func (m *pocRepo) UpdateBlog(ctx context.Context, p *models.Blog) (*models.Blog, error) {
+	query := "UPDATE blog set subject=?, updatedon=? where id=?"
+
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return nil, err
+	}
+	_, err = stmt.ExecContext(
+		ctx,
+		p.Subject,
+		p.UpdatedOn,
+		p.ID,
+	)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return nil, err
+	}
+	defer stmt.Close()
+
+	return p, nil
+}
+
+// Update TecMember
 func (m *pocRepo) UpdateTecMember(ctx context.Context, p *models.SaveTecMember) (*models.SaveTecMember, error) {
 	query := "UPDATE tecmember set member=?, project=?, coreskills=?, comments=?, isavailable=?, updatedon=? where id=?"
 
@@ -669,24 +709,6 @@ func (m *pocRepo) UpdateAccSnap(ctx context.Context, p *models.AccSnap) (*models
 	return p, nil
 }
 
-// Create new Poc
-func (m *pocRepo) CreateBlog(ctx context.Context, p *models.Blog) (int64, error) {
-	fmt.Println("blog", p.ID, p.Subject, p.UpdatedOn)
-	query := `INSERT INTO blog (subject, updatedon) VALUES(?, ?)`
-	stmt, err := m.Conn.PrepareContext(ctx, query)
-	if err != nil {
-		logging.Logger.Errorf(err.Error())
-		return -1, err
-	}
-	res, err := stmt.ExecContext(ctx, p.Subject, p.UpdatedOn)
-	if err != nil {
-		logging.Logger.Errorf(err.Error())
-		return -1, err
-	}
-
-	return res.RowsAffected()
-}
-
 // Update Poc
 func (m *pocRepo) UpdatePoc(ctx context.Context, p *models.Poc, id int64) (*models.Poc, error) {
 	query := "UPDATE pocs set account=?, pocname=?, technology=?, objective=?, owner=?, teamname=?, status=?, remarks=?, link=?, assignedto=? where id=?"
@@ -738,30 +760,6 @@ func (m *pocRepo) UpdateArb(ctx context.Context, p *models.Reviews, id int64) (*
 		p.EndDate,
 		p.ProjectScore,
 		id,
-	)
-	if err != nil {
-		logging.Logger.Errorf(err.Error())
-		return nil, err
-	}
-	defer stmt.Close()
-
-	return p, nil
-}
-
-// Update Feed
-func (m *pocRepo) UpdateBlog(ctx context.Context, p *models.Blog) (*models.Blog, error) {
-	query := "UPDATE blog set subject=?, updatedon=? where id=?"
-
-	stmt, err := m.Conn.PrepareContext(ctx, query)
-	if err != nil {
-		logging.Logger.Errorf(err.Error())
-		return nil, err
-	}
-	_, err = stmt.ExecContext(
-		ctx,
-		p.Subject,
-		p.UpdatedOn,
-		p.ID,
 	)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())
