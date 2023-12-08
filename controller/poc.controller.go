@@ -197,7 +197,6 @@ func (e *Poc) SaveTecMember(w http.ResponseWriter, r *http.Request) {
 
 // SaveTecMember inserts TecMember rows with negative ID values and updates rows with non-negative ID values.
 func (e *Poc) SaveBlogs(w http.ResponseWriter, r *http.Request) {
-	logging.Logger.Infof("step 1")
 	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, "Unable to parse form data", http.StatusBadRequest)
@@ -210,17 +209,15 @@ func (e *Poc) SaveBlogs(w http.ResponseWriter, r *http.Request) {
 	}
 	var responses []interface{}
 	var blogs []models.Blog
-	logging.Logger.Infof("step 2")
 	err = json.NewDecoder(r.Body).Decode(&blogs)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		logging.Logger.Errorf(err.Error())
 		return
 	}
-	logging.Logger.Infof("after unmarshal")
-	logging.Logger.Infof(err.Error())
 	// Iterate over the slice of tecMembers
 	for _, blog := range blogs {
+		logging.Logger.Info("inside for loop")
 		var res interface{}
 		var err error
 
