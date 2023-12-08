@@ -7,7 +7,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"time"
+	"fmt"
 )
 
 type pocRepo struct {
@@ -671,13 +671,14 @@ func (m *pocRepo) UpdateAccSnap(ctx context.Context, p *models.AccSnap) (*models
 
 // Create new Poc
 func (m *pocRepo) CreateBlog(ctx context.Context, p *models.Blog) (int64, error) {
+	fmt.Println("blog", p.ID, p.Subject, p.UpdatedOn)
 	query := `INSERT INTO blog (subject, updatedon) VALUES(?, ?)`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())
 		return -1, err
 	}
-	res, err := stmt.ExecContext(ctx, p.Subject, time.Now())
+	res, err := stmt.ExecContext(ctx, p.Subject, p.UpdatedOn)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())
 		return -1, err
