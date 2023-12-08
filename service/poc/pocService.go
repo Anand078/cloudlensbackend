@@ -701,7 +701,7 @@ func (m *pocRepo) UpdateBlog(ctx context.Context, p *models.Blog) (*models.Blog,
 }
 
 func (m *pocRepo) UpdateTechSession(ctx context.Context, p *models.TechSession) (*models.TechSession, error) {
-	query := "UPDATE techsession set topic=?, link=? updatedon=? where id=?"
+	query := "UPDATE techsession set topic=?, link=?, updatedon=? where id=?"
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
