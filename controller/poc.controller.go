@@ -7,7 +7,6 @@ import (
 	repo "backend/service"
 	poc "backend/service/poc"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -198,7 +197,7 @@ func (e *Poc) SaveTecMember(w http.ResponseWriter, r *http.Request) {
 
 // SaveTecMember inserts TecMember rows with negative ID values and updates rows with non-negative ID values.
 func (e *Poc) SaveBlogs(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("step 1")
+	logging.Logger.Infof("step 1")
 	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, "Unable to parse form data", http.StatusBadRequest)
@@ -211,15 +210,15 @@ func (e *Poc) SaveBlogs(w http.ResponseWriter, r *http.Request) {
 	}
 	var responses []interface{}
 	var blogs []models.Blog
-	fmt.Println("before unmarshal")
+	logging.Logger.Infof("step 2")
 	err = json.NewDecoder(r.Body).Decode(&blogs)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		logging.Logger.Errorf(err.Error())
 		return
 	}
-	fmt.Println("after unmarshal")
-	fmt.Println(err)
+	logging.Logger.Infof("after unmarshal")
+	logging.Logger.Infof(err.Error())
 	// Iterate over the slice of tecMembers
 	for _, blog := range blogs {
 		var res interface{}
