@@ -27,7 +27,7 @@ type Blog struct {
 // TechSession
 type TechSession struct {
 	ID        int64     `json:"id,omitempty"`
-	Topic     string    `json:"subject,omitempty"`
+	Topic     string    `json:"topic,omitempty"`
 	Link      string    `json:"link,omitempty"`
 	UpdatedOn time.Time `json:"updatedon,omitempty"`
 }
