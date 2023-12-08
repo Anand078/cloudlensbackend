@@ -217,7 +217,6 @@ func (e *Poc) SaveBlogs(w http.ResponseWriter, r *http.Request) {
 	}
 	// Iterate over the slice of tecMembers
 	for _, blog := range blogs {
-		logging.Logger.Info("inside for loop")
 		var res interface{}
 		var err error
 
