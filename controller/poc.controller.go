@@ -195,7 +195,6 @@ func (e *Poc) SaveTecMember(w http.ResponseWriter, r *http.Request) {
 	respondwithJSON(w, http.StatusOK, responses)
 }
 
-// SaveTecMember inserts TecMember rows with negative ID values and updates rows with non-negative ID values.
 func (e *Poc) SaveBlogs(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
@@ -226,6 +225,49 @@ func (e *Poc) SaveBlogs(w http.ResponseWriter, r *http.Request) {
 		} else {
 			// Update TecMember with non-negative ID
 			res, err = e.repo.UpdateBlog(r.Context(), &blog)
+		}
+
+		if err != nil {
+			respondWithError(w, http.StatusForbidden, err.Error())
+			logging.Logger.Errorf(err.Error())
+			return
+		}
+
+		responses = append(responses, res)
+	}
+	respondwithJSON(w, http.StatusOK, responses)
+}
+
+func (e *Poc) SaveTechSessions(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "Unable to parse form data", http.StatusBadRequest)
+		logging.Logger.Errorf(err.Error())
+		return
+	}
+
+	if r.Body == nil {
+		logging.Logger.Infof("empty body")
+	}
+	var responses []interface{}
+	var techSessions []models.TechSession
+	err = json.NewDecoder(r.Body).Decode(&techSessions)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		logging.Logger.Errorf(err.Error())
+		return
+	}
+	// Iterate over the slice of tecMembers
+	for _, techSession := range techSessions {
+		var res interface{}
+		var err error
+
+		if techSession.ID < 0 {
+			// Insert techsession with negative ID
+			res, err = e.repo.CreateTechSession(r.Context(), &techSession)
+		} else {
+			// Update techsession with non-negative ID
+			res, err = e.repo.UpdateTechSession(r.Context(), &techSession)
 		}
 
 		if err != nil {

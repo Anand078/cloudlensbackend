@@ -25,6 +25,8 @@ type PocRepo interface {
 
 	//Tech sessions
 	FetchTechSessions(ctx context.Context) ([]*models.TechSession, error)
+	CreateTechSession(ctx context.Context, e *models.TechSession) (int64, error)
+	UpdateTechSession(ctx context.Context, e *models.TechSession) (*models.TechSession, error)
 
 	//Architecture Review Board
 	CreateArb(ctx context.Context, e *models.Reviews) (int64, error)

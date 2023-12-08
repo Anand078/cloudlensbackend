@@ -554,7 +554,7 @@ func (m *pocRepo) CreateTecMember(ctx context.Context, p *models.SaveTecMember) 
 	return res.RowsAffected()
 }
 
-// Create new TecMember
+// Create new Blog
 func (m *pocRepo) CreateBlog(ctx context.Context, p *models.Blog) (int64, error) {
 	query := `INSERT INTO blog (subject, updatedon) VALUES(?, ?)`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
@@ -563,6 +563,22 @@ func (m *pocRepo) CreateBlog(ctx context.Context, p *models.Blog) (int64, error)
 		return -1, err
 	}
 	res, err := stmt.ExecContext(ctx, p.Subject, p.UpdatedOn)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return -1, err
+	}
+
+	return res.RowsAffected()
+}
+
+func (m *pocRepo) CreateTechSession(ctx context.Context, p *models.TechSession) (int64, error) {
+	query := `INSERT INTO techsession (topic, link, updatedon) VALUES(?, ?, ?)`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return -1, err
+	}
+	res, err := stmt.ExecContext(ctx, p.Topic, p.Link, p.UpdatedOn)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())
 		return -1, err
@@ -660,7 +676,7 @@ func (m *pocRepo) CreateAccSnap(ctx context.Context, p *models.AccSnap) (int64, 
 	return res.RowsAffected()
 }
 
-// Update TecMember
+// Update Blog
 func (m *pocRepo) UpdateBlog(ctx context.Context, p *models.Blog) (*models.Blog, error) {
 	query := "UPDATE blog set subject=?, updatedon=? where id=?"
 
@@ -672,6 +688,30 @@ func (m *pocRepo) UpdateBlog(ctx context.Context, p *models.Blog) (*models.Blog,
 	_, err = stmt.ExecContext(
 		ctx,
 		p.Subject,
+		p.UpdatedOn,
+		p.ID,
+	)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return nil, err
+	}
+	defer stmt.Close()
+
+	return p, nil
+}
+
+func (m *pocRepo) UpdateTechSession(ctx context.Context, p *models.TechSession) (*models.TechSession, error) {
+	query := "UPDATE techsession set topic=?, link=? updatedon=? where id=?"
+
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return nil, err
+	}
+	_, err = stmt.ExecContext(
+		ctx,
+		p.Topic,
+		p.Link,
 		p.UpdatedOn,
 		p.ID,
 	)
