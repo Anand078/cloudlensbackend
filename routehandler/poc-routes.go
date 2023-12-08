@@ -27,7 +27,7 @@ func HandlePocRoutes(r *mux.Router, db *dbconfig.DB) {
 
 	//Tech session APIs
 	r.HandleFunc("/techsession", pocHandler.GetTechSessions).Methods(http.MethodGet)
-	r.HandleFunc("/techsession", pocHandler.SaveBlogs).Methods(http.MethodPost)
+	r.HandleFunc("/techsession", pocHandler.SaveTechSessions).Methods(http.MethodPost)
 
 	//Architecture Review APIs
 	r.HandleFunc("/arb", pocHandler.GetArb).Methods(http.MethodGet)
