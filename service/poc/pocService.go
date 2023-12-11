@@ -533,7 +533,7 @@ func (m *pocRepo) GetPocByID(ctx context.Context, id int64) (*models.Poc, error)
 }
 
 func (m *pocRepo) GetArbResponseByID(ctx context.Context, id int64) (*models.ArbReponse, error) {
-	query := `Select id, projectid, response, updatedon FROM arbresponse WHERE id=?`
+	query := `Select id, projectid, response, updatedon FROM arbresponse WHERE projectid=?`
 
 	rows, err := m.fetchArbResponseById(ctx, query, id)
 	if err != nil {
