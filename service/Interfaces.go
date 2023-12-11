@@ -60,4 +60,8 @@ type PocRepo interface {
 	FetchSkills(ctx context.Context) ([]*models.Skills, error)
 	CreateCoreSkill(ctx context.Context, e *models.Skills) (int64, error)
 	UpdateCoreSkill(ctx context.Context, e *models.Skills) (*models.Skills, error)
+
+	CreateArbResponse(ctx context.Context, e *models.ArbReponse) (int64, error)
+	GetArbResponseByID(ctx context.Context, id int64) (*models.ArbReponse, error)
+	UpdateArbResponse(ctx context.Context, e *models.ArbReponse) (*models.ArbReponse, error)
 }

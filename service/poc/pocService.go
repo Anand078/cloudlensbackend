@@ -54,6 +54,31 @@ func (m *pocRepo) fetch(ctx context.Context, query string, args ...interface{}) 
 	return payload, nil
 }
 
+func (m *pocRepo) fetchArbResponseById(ctx context.Context, query string, args ...interface{}) ([]*models.ArbReponse, error) {
+	rows, err := m.Conn.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	payload := make([]*models.ArbReponse, 0)
+	for rows.Next() {
+		data := new(models.ArbReponse)
+
+		err := rows.Scan(
+			&data.ID,
+			&data.ProjectId,
+			&data.Response,
+			&data.UpdatedOn,
+		)
+		if err != nil {
+			logging.Logger.Errorf(err.Error())
+			return nil, err
+		}
+		payload = append(payload, data)
+	}
+	return payload, nil
+}
+
 // define fetch method
 func (m *pocRepo) fetchTecById(ctx context.Context, query string, args ...interface{}) ([]*models.TECTimeline, error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -507,6 +532,25 @@ func (m *pocRepo) GetPocByID(ctx context.Context, id int64) (*models.Poc, error)
 	return payload, nil
 }
 
+func (m *pocRepo) GetArbResponseByID(ctx context.Context, id int64) (*models.ArbReponse, error) {
+	query := `Select id, projectid, response, updatedon FROM arbresponse WHERE id=?`
+
+	rows, err := m.fetchArbResponseById(ctx, query, id)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return nil, err
+	}
+
+	payload := &models.ArbReponse{}
+	if len(rows) > 0 {
+		payload = rows[0]
+	} else {
+		return payload, errors.New("requested arb response is not found")
+	}
+
+	return payload, nil
+}
+
 // Get Poc by id
 func (m *pocRepo) GetTecActivityByID(ctx context.Context, id int64) ([]*models.TECTimeline, error) {
 	query := `Select id, tecid, comments, updatedon FROM tectimeline WHERE tecid=? order by id desc;`
@@ -529,6 +573,22 @@ func (m *pocRepo) CreatePoc(ctx context.Context, p *models.Poc) (int64, error) {
 		return -1, err
 	}
 	res, err := stmt.ExecContext(ctx, p.Account, p.Pocname, p.Technology, p.Objective, p.Owner, p.Teamname, p.Status, p.Remarks, p.Link, p.AssignedTo)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return -1, err
+	}
+
+	return res.RowsAffected()
+}
+
+func (m *pocRepo) CreateArbResponse(ctx context.Context, p *models.ArbReponse) (int64, error) {
+	query := `INSERT INTO arbresponse (projectid, response, updatedon) VALUES(?, ?, ?)`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return -1, err
+	}
+	res, err := stmt.ExecContext(ctx, p.ProjectId, p.Response, p.UpdatedOn)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())
 		return -1, err
@@ -803,6 +863,29 @@ func (m *pocRepo) UpdatePoc(ctx context.Context, p *models.Poc, id int64) (*mode
 		p.Link,
 		p.AssignedTo,
 		id,
+	)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return nil, err
+	}
+	defer stmt.Close()
+
+	return p, nil
+}
+
+func (m *pocRepo) UpdateArbResponse(ctx context.Context, p *models.ArbReponse) (*models.ArbReponse, error) {
+	query := "UPDATE arbresponse set response=?, updatedon=? where id=?"
+
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return nil, err
+	}
+	_, err = stmt.ExecContext(
+		ctx,
+		p.Response,
+		p.UpdatedOn,
+		p.ID,
 	)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())

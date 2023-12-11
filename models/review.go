@@ -109,3 +109,10 @@ type Skills struct {
 	Skill     string    `json:"skill,omitempty"`
 	UpdatedOn time.Time `json:"updatedon,omitempty"`
 }
+
+type ArbReponse struct {
+	ID        int64     `json:"id,omitempty"`
+	ProjectId int64     `json:"projectid,omitempty"`
+	Response  string    `json:"response,omitempty"`
+	UpdatedOn time.Time `json:"updatedon,omitempty"`
+}

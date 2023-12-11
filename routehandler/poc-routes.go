@@ -60,4 +60,9 @@ func HandlePocRoutes(r *mux.Router, db *dbconfig.DB) {
 
 	//Core skills
 	r.HandleFunc("/skills", pocHandler.SaveCoreSkills).Methods(http.MethodPost)
+
+	//arb review report APIs
+	r.HandleFunc("/arbresponse", pocHandler.CreateArbResponse).Methods(http.MethodPost)
+	r.HandleFunc("/arbresponse/{id}", pocHandler.GetArbResponseById).Methods(http.MethodGet)
+	r.HandleFunc("/arbresponse/{id}", pocHandler.UpdateArbResponse).Methods(http.MethodPut)
 }

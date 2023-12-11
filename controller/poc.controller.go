@@ -68,6 +68,20 @@ func (e *Poc) GetPocById(w http.ResponseWriter, r *http.Request) {
 	respondwithJSON(w, 200, res)
 }
 
+func (e *Poc) GetArbResponseById(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	res, err := e.repo.GetArbResponseByID(r.Context(), id)
+	if err != nil {
+		respondWithError(w, http.StatusNotFound, err.Error())
+		return
+	}
+	respondwithJSON(w, 200, res)
+}
+
 // swagger:route POST /poc Pocs createPoc
 // Create new poc
 // responses:
@@ -106,6 +120,32 @@ func (e *Poc) CreatePoc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// On success
+	respondwithJSON(w, 200, res)
+}
+
+func (e *Poc) CreateArbResponse(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if r.Body == nil {
+		logging.Logger.Infof("empty body")
+	}
+	req := models.ArbReponse{}
+
+	err = json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	res, err := e.repo.CreateArbResponse(r.Context(), &req)
+	if err != nil {
+		respondWithError(w, http.StatusForbidden, err.Error())
+		return
+	}
 	respondwithJSON(w, 200, res)
 }
 
@@ -504,6 +544,29 @@ func (e *Poc) UpdatePoc(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, err := e.repo.UpdatePoc(r.Context(), &req, id)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		respondWithError(w, http.StatusForbidden, err.Error())
+		return
+	}
+	// On success
+	respondwithJSON(w, 200, res)
+}
+
+func (e *Poc) UpdateArbResponse(w http.ResponseWriter, r *http.Request) {
+	req := models.ArbReponse{}
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+
+		return
+	}
+
+	res, err := e.repo.UpdateArbResponse(r.Context(), &req)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())
 		respondWithError(w, http.StatusForbidden, err.Error())
