@@ -874,7 +874,7 @@ func (m *pocRepo) UpdatePoc(ctx context.Context, p *models.Poc, id int64) (*mode
 }
 
 func (m *pocRepo) UpdateArbResponse(ctx context.Context, p *models.ArbReponse) (*models.ArbReponse, error) {
-	query := "UPDATE arbresponse set response=?, updatedon=? where id=?"
+	query := "UPDATE arbresponse set response=?, updatedon=? where projectid=?"
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
@@ -885,7 +885,7 @@ func (m *pocRepo) UpdateArbResponse(ctx context.Context, p *models.ArbReponse) (
 		ctx,
 		p.Response,
 		p.UpdatedOn,
-		p.ID,
+		p.ProjectId,
 	)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())
