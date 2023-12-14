@@ -82,13 +82,6 @@ func (e *Poc) GetArbResponseById(w http.ResponseWriter, r *http.Request) {
 	respondwithJSON(w, 200, res)
 }
 
-// swagger:route POST /poc Pocs createPoc
-// Create new poc
-// responses:
-//   200: jsonResponse
-//
-// swagger:response jsonResponse
-
 // Create Poc
 func (e *Poc) CreatePoc(w http.ResponseWriter, r *http.Request) {
 	// Parse the form data
@@ -806,6 +799,24 @@ func (e *Poc) GetAccActivity(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	res, err := e.repo.GetAccActivityByID(r.Context(), id)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		respondWithError(w, http.StatusNotFound, err.Error())
+		return
+	}
+	// On success
+	respondwithJSON(w, 200, res)
+}
+
+func (e *Poc) GetARBScore(w http.ResponseWriter, r *http.Request) {
+	// Covert id from str to int64
+	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		logging.Logger.Errorf(err.Error())
+		return
+	}
+	res, err := e.repo.GetArbScoreByID(r.Context(), id)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())
 		respondWithError(w, http.StatusNotFound, err.Error())

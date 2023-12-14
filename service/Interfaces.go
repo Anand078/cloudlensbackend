@@ -64,4 +64,5 @@ type PocRepo interface {
 	CreateArbResponse(ctx context.Context, e *models.ArbReponse) (int64, error)
 	GetArbResponseByID(ctx context.Context, id int64) (*models.ArbReponse, error)
 	UpdateArbResponse(ctx context.Context, e *models.ArbReponse) (*models.ArbReponse, error)
+	GetArbScoreByID(ctx context.Context, id int64) ([]*models.ArbScore, error)
 }

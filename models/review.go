@@ -116,3 +116,10 @@ type ArbReponse struct {
 	Response  string    `json:"response,omitempty"`
 	UpdatedOn time.Time `json:"updatedon,omitempty"`
 }
+
+type ArbScore struct {
+	ID            int64  `json:"id,omitempty"`
+	PillarName    string `json:"pillarname,omitempty"`
+	Topics        int32  `json:"topics,omitempty"`
+	BestPractices int32  `json:"bestpractices,omitempty"`
+}

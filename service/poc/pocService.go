@@ -132,6 +132,32 @@ func (m *pocRepo) fetchAccById(ctx context.Context, query string, args ...interf
 	return payload, nil
 }
 
+func (m *pocRepo) fetchArbScoreById(ctx context.Context, query string, args ...interface{}) ([]*models.ArbScore, error) {
+	rows, err := m.Conn.QueryContext(ctx, query, args...)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+	payload := make([]*models.ArbScore, 0)
+	for rows.Next() {
+		data := new(models.ArbScore)
+
+		err := rows.Scan(
+			&data.ID,
+			&data.PillarName,
+			&data.Topics,
+			&data.BestPractices,
+		)
+		if err != nil {
+			logging.Logger.Errorf(err.Error())
+			return nil, err
+		}
+		payload = append(payload, data)
+	}
+	return payload, nil
+}
+
 // define fetchBlogs method
 func (m *pocRepo) fetchBlogs(ctx context.Context, query string, args ...interface{}) ([]*models.Blog, error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -557,10 +583,17 @@ func (m *pocRepo) GetTecActivityByID(ctx context.Context, id int64) ([]*models.T
 	return m.fetchTecById(ctx, query, id)
 }
 
-// Get Poc by id
 func (m *pocRepo) GetAccActivityByID(ctx context.Context, id int64) ([]*models.AccTimeline, error) {
 	query := `Select id, accid, comments, updatedon FROM acctimeline WHERE accid=? order by id desc;`
 	return m.fetchAccById(ctx, query, id)
+}
+
+func (m *pocRepo) GetArbScoreByID(ctx context.Context, id int64) ([]*models.ArbScore, error) {
+	query := `SELECT pm.id AS id, pm.pillarname, COUNT(DISTINCT tm.id) AS topics, COUNT(DISTINCT bp.id) AS bestpractices
+	FROM pillarmaster pm LEFT JOIN topicmaster tm ON pm.id = tm.pillarid LEFT JOIN bestpracticemaster bp ON tm.id = bp.topicid
+	LEFT JOIN arbresponse ar ON ar.projectid=? WHERE pm.isactive = 1 AND tm.isactive = 1 AND bp.isactive = 1
+	GROUP BY pm.id, pm.pillarname;`
+	return m.fetchArbScoreById(ctx, query, id)
 }
 
 // Create new Poc
