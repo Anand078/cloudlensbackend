@@ -125,6 +125,6 @@ type ArbScore struct {
 	Compliant     int32  `json:"compliant"`
 	NonCompliant  int32  `json:"noncompliant"`
 	NotApplicable int32  `json:"notapplicable"`
-	Score         int32  `json:"score"`
+	Score         string `json:"score"`
 	Status        string `json:"status"`
 }
