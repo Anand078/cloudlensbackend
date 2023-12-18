@@ -148,9 +148,11 @@ func (m *pocRepo) fetchArbScoreById(ctx context.Context, query string, args ...i
 			&data.PillarName,
 			&data.Topics,
 			&data.BestPractices,
-			&data.YesCount,
-			&data.NoCount,
-			&data.NACount,
+			&data.Compliant,
+			&data.NonCompliant,
+			&data.NotApplicable,
+			&data.Score,
+			&data.Status,
 		)
 		if err != nil {
 			logging.Logger.Errorf(err.Error())
@@ -592,15 +594,8 @@ func (m *pocRepo) GetAccActivityByID(ctx context.Context, id int64) ([]*models.A
 }
 
 func (m *pocRepo) GetArbScoreByID(ctx context.Context, id int64) ([]*models.ArbScore, error) {
-	query := `SELECT pm.id AS id, pm.pillarname, COUNT(DISTINCT tm.id) AS topics, 
-	COUNT(DISTINCT bp.id) AS bestpractices, 
-	COUNT(CASE WHEN FIND_IN_SET(bp.id, REPLACE(ar.response, ':Yes', '')) > 0 THEN 1 END) AS YesCount, 
-	COUNT(CASE WHEN FIND_IN_SET(bp.id, REPLACE(ar.response, ':No', '')) > 0 THEN 1 END) AS NoCount, 
-	COUNT(CASE WHEN FIND_IN_SET(bp.id, REPLACE(ar.response, ':NA', '')) > 0 THEN 1 END) AS NACount 
-	FROM pillarmaster pm LEFT JOIN topicmaster tm ON pm.id=tm.pillarid LEFT JOIN bestpracticemaster bp ON tm.id=bp.topicid 
-	LEFT JOIN arbresponse ar ON ar.projectid=? AND tm.id=bp.topicid WHERE pm.isactive=1 AND tm.isactive = 1 
-	AND bp.isactive = 1 GROUP BY pm.id, pm.pillarname;`
-	return m.fetchArbScoreById(ctx, query, id)
+	sp := `CALL GetArbScoreByID(?)`
+	return m.fetchArbScoreById(ctx, sp, id)
 }
 
 // Create new Poc

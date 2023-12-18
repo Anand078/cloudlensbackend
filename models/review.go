@@ -122,7 +122,9 @@ type ArbScore struct {
 	PillarName    string `json:"pillarname,omitempty"`
 	Topics        int32  `json:"topics"`
 	BestPractices int32  `json:"bestpractices"`
-	YesCount      int32  `json:"yescount"`
-	NoCount       int32  `json:"nocount"`
-	NACount       int32  `json:"nacount"`
+	Compliant     int32  `json:"compliant"`
+	NonCompliant  int32  `json:"noncompliant"`
+	NotApplicable int32  `json:"notapplicable"`
+	Score         int32  `json:"score"`
+	Status        string `json:"status"`
 }
