@@ -120,9 +120,9 @@ type ArbReponse struct {
 type ArbScore struct {
 	ID            int64  `json:"id,omitempty"`
 	PillarName    string `json:"pillarname,omitempty"`
-	Topics        int32  `json:"topics,omitempty"`
-	BestPractices int32  `json:"bestpractices,omitempty"`
-	YesCount      int32  `json:"yesount,omitempty"`
-	NoCount       int32  `json:"nocount,omitempty"`
-	NACount       int32  `json:"nacount,omitempty"`
+	Topics        int32  `json:"topics"`
+	BestPractices int32  `json:"bestpractices"`
+	YesCount      int32  `json:"yesount"`
+	NoCount       int32  `json:"nocount"`
+	NACount       int32  `json:"nacount"`
 }
