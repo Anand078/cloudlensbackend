@@ -771,8 +771,9 @@ func (m *pocRepo) CreateAccSnap(ctx context.Context, p *models.AccSnap) (int64, 
 	return res.RowsAffected()
 }
 
-// Update Blog
 func (m *pocRepo) UpdateBlog(ctx context.Context, p *models.Blog) (*models.Blog, error) {
+	updatedOnDatePart := p.UpdatedOn.Format("2006-01-02")
+
 	query := "UPDATE blog set subject=?, updatedon=? where id=?"
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
@@ -783,7 +784,7 @@ func (m *pocRepo) UpdateBlog(ctx context.Context, p *models.Blog) (*models.Blog,
 	_, err = stmt.ExecContext(
 		ctx,
 		p.Subject,
-		p.UpdatedOn,
+		updatedOnDatePart,
 		p.ID,
 	)
 	if err != nil {
