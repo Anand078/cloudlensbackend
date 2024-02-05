@@ -921,6 +921,31 @@ func (e *Poc) UpdateArbStatus(w http.ResponseWriter, r *http.Request) {
 	respondwithJSON(w, http.StatusAccepted, res)
 }
 
+func (e *Poc) UpdatePhaseVisibility(w http.ResponseWriter, r *http.Request) {
+	req := models.PhaseVisibilityId{}
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		respondWithError(w, http.StatusBadRequest, "Bad request")
+		return
+	}
+	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		respondWithError(w, http.StatusBadRequest, "Bad request")
+		return
+	}
+	res, err := e.repo.UpdatePhaseVisibility(r.Context(), uint(req.PhaseVisibility), id)
+
+	if err != nil {
+		respondWithError(w, http.StatusForbidden, "Forbidden")
+		logging.Logger.Errorf(err.Error())
+		return
+	}
+	// On success
+	respondwithJSON(w, http.StatusAccepted, res)
+}
+
 func (e *Poc) UpdateDescription(w http.ResponseWriter, r *http.Request) {
 	req := models.BestPractice{}
 	err := json.NewDecoder(r.Body).Decode(&req)

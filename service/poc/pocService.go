@@ -368,6 +368,7 @@ func (m *pocRepo) fetchAccSnap(ctx context.Context, query string, args ...interf
 			&data.ResourceRequirement,
 			&data.Blocker,
 			&data.Comments,
+			&data.PhaseVisibility,
 			&data.UpdatedOn,
 		)
 		if err != nil {
@@ -519,7 +520,7 @@ func (m *pocRepo) FetchTecActivity(ctx context.Context) ([]*models.TecMember, er
 func (m *pocRepo) FetchAccSnap(ctx context.Context) ([]*models.AccSnap, error) {
 	query := `SELECT id, accname, IFNULL(version, '') as version, IFNULL(indicativetimeline, '') as indicativetimeline,
 		IFNULL(resourcerequirement, '') as resourcerequirement, IFNULL(blocker, '') as blocker, IFNULL(comments, '') as comments,
-			updatedon FROM acceleratorsnap order by id desc;`
+			phasevisibility, updatedon FROM acceleratorsnap order by id desc;`
 	return m.fetchAccSnap(ctx, query)
 }
 
@@ -1058,6 +1059,21 @@ func (m *pocRepo) fetchPieChartCount(ctx context.Context, query string, args ...
 // Update Feed
 func (m *pocRepo) UpdateArbStatus(ctx context.Context, statusid uint, id int64) (int64, error) {
 	query := "UPDATE reviewboard SET statusid=? WHERE id=?"
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return 0, err
+	}
+	res, err := stmt.ExecContext(ctx, statusid, id)
+	if err != nil {
+		logging.Logger.Errorf(err.Error())
+		return 0, err
+	}
+	return res.RowsAffected()
+}
+
+func (m *pocRepo) UpdatePhaseVisibility(ctx context.Context, statusid uint, id int64) (int64, error) {
+	query := "UPDATE acceleratorsnap SET phasevisibility=? WHERE id=?"
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		logging.Logger.Errorf(err.Error())

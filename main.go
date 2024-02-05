@@ -25,7 +25,10 @@ func main() {
 	}
 	routehandler.HandlePocRoutes(router, db)
 
+	allowedOrigins := handlers.AllowedOrigins([]string{"*", "http://localhost:8080", "http://localhost:3000"})
+
 	corsMiddleware := handlers.CORS(
+		allowedOrigins,
 		handlers.AllowedOrigins([]string{"*", "http://localhost:8080", "http://localhost:3000"}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
 		handlers.AllowedHeaders([]string{"Content-Type"}),

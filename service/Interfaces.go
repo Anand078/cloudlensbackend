@@ -53,6 +53,7 @@ type PocRepo interface {
 	FetchAccSnap(ctx context.Context) ([]*models.AccSnap, error)
 	CreateAccSnap(ctx context.Context, e *models.AccSnap) (int64, error)
 	UpdateAccSnap(ctx context.Context, e *models.AccSnap) (*models.AccSnap, error)
+	UpdatePhaseVisibility(ctx context.Context, statusid uint, id int64) (int64, error)
 	CreateAccTimeline(ctx context.Context, e *models.AccTimeline) (int64, error)
 	GetAccActivityByID(ctx context.Context, id int64) ([]*models.AccTimeline, error)
 

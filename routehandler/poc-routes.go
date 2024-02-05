@@ -55,6 +55,7 @@ func HandlePocRoutes(r *mux.Router, db *dbconfig.DB) {
 	//Accelerator
 	r.HandleFunc("/accsnap", pocHandler.GetAccSnapshots).Methods(http.MethodGet)
 	r.HandleFunc("/accsnap", pocHandler.SaveAccSnapshot).Methods(http.MethodPost)
+	r.HandleFunc("/accsnap/{id}", pocHandler.UpdatePhaseVisibility).Methods(http.MethodPut)
 	r.HandleFunc("/acctimeline/{id}", pocHandler.GetAccActivity).Methods(http.MethodGet)
 	r.HandleFunc("/acctimeline", pocHandler.SaveAccActivity).Methods(http.MethodPost)
 

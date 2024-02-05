@@ -30,6 +30,10 @@ type ArbStatusId struct {
 	StatusId int32 `json:"statusid,omitempty"`
 }
 
+type PhaseVisibilityId struct {
+	PhaseVisibility int32 `json:"phasevisibility,omitempty"`
+}
+
 type BestPractice struct {
 	Id          int32  `json:"id,omitempty"`
 	Description string `json:"description,omitempty"`
@@ -87,6 +91,7 @@ type AccSnap struct {
 	ResourceRequirement string    `json:"resourcerequirement,omitempty"`
 	Blocker             string    `json:"blocker,omitempty"`
 	Comments            string    `json:"comments,omitempty"`
+	PhaseVisibility     int8      `json:"phasevisibility"`
 	UpdatedOn           time.Time `json:"updatedon,omitempty"`
 }
 
